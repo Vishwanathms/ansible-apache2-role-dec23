@@ -1,0 +1,38 @@
+# Copyright (c) 2021 Markus Falb <markus.falb@mafalb.at>
+# GNU General Public License v3.0+
+# see LICENSE or https://www.gnu.org/licenses/gpl-3.0.txt
+---
+
+- name: apache is present
+  package:
+    name: "{{ httpd_packages }}"
+  #environment: "{{ proxy|default({}) }}"
+
+
+#- name: apache config
+#  block:
+#  - name: apache config is present
+#    include_tasks:
+#      file: "{{ role_path }}/tasks/cfg/present.yml"
+#    vars:
+#      do: cfg
+#  when: httpd_cfgs is defined or cfgs is defined
+
+- name: apache is started
+  service:
+    name: "{{ httpd_service }}"
+    state: started
+    enabled: "{{ httpd_service_enabled }}"
+  when: httpd_service_managed
+  register: _httpd_has_started
+
+- name: debug output
+  debug:
+    # var: _httpd_has_started.state
+    var: "{{ item }}" 
+  with_items:  
+    - _httpd_has_started.state
+    - _httpd_has_started.status.ActiveState
+...
+
+
